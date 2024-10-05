@@ -1,0 +1,34 @@
+---
+- name: Setup Remote Host
+  hosts: "{{ host_ip }}"
+  become: yes
+  vars:
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ssh_key: "{{ ssh_key }}"
+    packages: "{{ packages.split(',') }}"
+    config_files: "{{ config_files.split(',') }}"
+
+  tasks:
+    - name: Ensure user exists
+      user:
+        name: "{{ username }}"
+        password: "{{ password | password_hash('sha512') }}"
+        state: present
+
+    - name: Copy ssh key
+      copy:
+        content: "{{ ssh_key }}"
+        dest: "/etc/jenkins_ssh_key"
+
+    - name: Install packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages.split(', ') }}"
+
+    - name: Deploy configuration files
+      copy:
+        src: "{{ item }}"
+        dest: "/etc/{{ item }}"
+      loop: "{{ config_files.split(', ') }}"

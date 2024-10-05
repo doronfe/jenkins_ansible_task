@@ -1,44 +1,33 @@
-version: "3.8"
-services:
-    main:
-        hostname: jenkins-main
-        build:
-            context: .
-            dockerfile: Dockerfile.main
-        ports:
-            - "80:8080"
-        networks:
-            - jenkins
-        volumes:
-            - ./jenkins_data:/var/run/docker.sock    
-    
-    worker1:
-        hostname: worker1
-        build:
-            context: .
-            dockerfile: Dockerfile.worker
+version: '3.8'
 
-        networks:
-            - jenkins
-        environment:
-            SSH_USERNAME: jenkins
-            SSH_USERPASS: jenkins
-        volumes:
-            - ./jenkins_data:/var/run/docker.sock    
+services: 
+  ansible-host:
+    hostname: ansible-host 
+    build: .
+    container_name: ansible-host 
+    volumes: 
+      - ./roles:/etc/ansible/roles 
+      - ./playbook.yml:/etc/ansible/playbook.yml 
+      - ./inventory.ini:/etc/ansible/inventory.ini
+      - ./ansible.cfg:/etc/ansible/ansible.cfg     
+      - ./run_playbook.sh:/usr/local/bin/run_playbook.sh 
+    command: ["sudo", "./usr/local/bin/run_playbook.sh"]
+    networks:
+      - ansible_k3s
 
-    worker2:
-        hostname: worker2
-        build:
-            context: .
-            dockerfile: Dockerfile.worker
-
-        networks:
-            - jenkins
-        environment:
-            SSH_USERNAME: jenkins
-            SSH_USERPASS: jenkins
-        volumes:
-            - ./jenkins_data:/var/run/docker.sock    
+  ansible-agent:
+    hostname: ansible-agent
+    container_name: ansible-agent 
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    environment:
+      SSH_USERNAME: doron
+      SSH_USERPASS: doron
+    command: ["sudo", "/usr/sbin/sshd", "-D"]
+    networks:
+      - ansible_k3s
 
 networks:
-    jenkins:
+  ansible_k3s:
+    driver: bridge

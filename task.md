@@ -1,22 +1,15 @@
-# Ansible Jenkins Pipeline
+# Ansible Task
 
-Create Jenkins multi-branch pipeline that will take remote host ip address, type of remote host(server or desktop or laptop), username, password, sshkey, dedicated list of packages and dedicated config files. All the details will be used to setup the remote host with all the provided data to pipeline via ansible playbooks/roles
+Install K3s master and slave nodes based on [get.k3s.io](https://get.k3s.io) install script
 
-### Tasks
+### Tasks:
 
-- Create jenkins multi-branch pipeline
-    - Should take parameters of:
-        - Host ip - where to connect
-        - Username - user that suppose to be create, if it does not exists
-        - Password - password for that user, should be either encrypted with ansible or saved in jenkins
-        - Golden ssh key for future remote connection
-        - List of packages - software to install, may be predefined in playbook
-        - Dedicated config files - config for installed software, you may use templates
-        
-    - Jenkins should use ansible plugin
-    - Ansible playbooks/roles can be used from previous modul or written from scratch
+- Create k3s install role that will install k3s offline - without downloading anything from internet, all the binaries need to be included in ansible role
+- Create k3s agent role that will install k3s offline - without downloading anyting from the insternet, all the binaries need to be included in insible role.
+- Create playbook that uses roles above
+- Create python/bash/ruby/powershell/js script that will run the ansible playbook
 
+#### Notes:
 
-### Notes
-
-- Ansible plugin for jenkins requires additional configuration, please RTFM
+- K3s needs to be run before setting slaves/node/agents
+- Read the install script carefully before running it.
