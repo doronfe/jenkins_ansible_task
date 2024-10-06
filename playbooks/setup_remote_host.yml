@@ -31,6 +31,7 @@
   hosts: all
   tasks:
     - name: Create destination directories
+      become: yes
       file:
         path: "{{ item.dest | dirname }}"
         state: directory
@@ -38,6 +39,7 @@
       loop: "{{ config_files }}"
 
     - name: Deploy configuration files
+      become: yes
       copy:
         src: "{{ item.src }}"
         dest: "{{ item.dest }}"
