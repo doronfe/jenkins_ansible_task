@@ -27,8 +27,18 @@
         state: present
       loop: "{{ packages.split(', ') }}"
 
+- name: Ensure destination directories exist and deploy configuration files
+  hosts: all
+  tasks:
+    - name: Create destination directories
+      file:
+        path: "{{ item.dest | dirname }}"
+        state: directory
+        mode: '0755'
+      loop: "{{ config_files }}"
+
     - name: Deploy configuration files
       copy:
-        src: "{{ item }}"
-        dest: "/etc/{{ item }}"
-      loop: "{{ config_files.split(', ') }}"
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      loop: "{{ config_files }}"
