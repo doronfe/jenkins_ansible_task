@@ -28,7 +28,7 @@
       loop: "{{ packages.split(', ') }}"
 
 - name: Ensure destination directories exist and deploy configuration files
-  hosts: all
+  hosts: "{{ host_ip }}"
   tasks:
     - name: Create destination directories
       become: yes
